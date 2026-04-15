@@ -1,0 +1,16 @@
+#!/bin/bash
+# AI Team Leader Conformity Check - Run periodically (every hour)
+# Checks recent recordings for call structure compliance
+
+cd /root/projects/ai-team-leader-vici
+source config/settings.env 2>/dev/null
+
+# Resource check - abort if server busy
+LOAD=$(awk '{print $1}' /proc/loadavg | cut -d. -f1)
+if [ "$LOAD" -gt 3 ]; then
+    echo "$(date): Skipping conformity check - high load $LOAD" >> /var/log/ai-team-leader.log
+    exit 0
+fi
+
+# Run with timeout (10 min max for batch processing)
+timeout 600 /usr/bin/python3.11 src/recording_conformity.py --run 5 >> /var/log/ai-team-leader.log 2>&1
