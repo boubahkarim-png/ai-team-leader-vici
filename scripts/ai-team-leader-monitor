@@ -13,4 +13,4 @@ if [ "$LOAD" -gt 4 ]; then
 fi
 
 # Run with timeout
-timeout 25s /usr/bin/python3.11 src/ai_team_leader.py --monitor >> /var/log/ai-team-leader.log 2>&1
+timeout 25s /usr/bin/python3.11 src/ai_team_leader.py >> /var/log/ai-team-leader.log 2>&1
