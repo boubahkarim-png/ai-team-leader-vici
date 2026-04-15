@@ -1,0 +1,13 @@
+#!/bin/bash
+# AI Team Leader Greeting - Called when agent logs in
+# Usage: ai-team-leader-greeting <agent_user> <campaign_id>
+
+AGENT_USER=$1
+CAMPAIGN_ID=$2
+
+[ -z "$AGENT_USER" ] || [ -z "$CAMPAIGN_ID" ] && exit 1
+
+cd /root/projects/ai-team-leader-vici
+source config/settings.env 2>/dev/null
+
+/usr/bin/python3.11 src/ai_team_leader.py --greeting "$AGENT_USER" "$CAMPAIGN_ID" >> /var/log/ai-team-leader.log 2>&1

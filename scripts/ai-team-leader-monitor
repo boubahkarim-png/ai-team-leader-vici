@@ -1,0 +1,16 @@
+#!/bin/bash
+# AI Team Leader Monitor - Cron wrapper (every minute)
+# Lightweight: exits within 30 seconds max
+
+cd /root/projects/ai-team-leader-vici
+source config/settings.env 2>/dev/null
+
+# Resource check - abort if server busy
+LOAD=$(awk '{print $1}' /proc/loadavg | cut -d. -f1)
+if [ "$LOAD" -gt 4 ]; then
+    echo "$(date): Skipping - high load $LOAD" >> /var/log/ai-team-leader.log
+    exit 0
+fi
+
+# Run with timeout
+timeout 25s /usr/bin/python3.11 src/ai_team_leader.py --monitor >> /var/log/ai-team-leader.log 2>&1
