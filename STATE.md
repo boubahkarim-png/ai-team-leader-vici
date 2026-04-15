@@ -37,8 +37,9 @@
 # Monitor (every minute)
 * * * * * /usr/local/bin/ai-team-leader-monitor
 
-# Conformity Check (4x daily, Mon-Fri, office hours)
-0 10,14,18,22 * * 1-5 /usr/local/bin/ai-team-leader-conformity
+# Conformity Check (2x daily, Mon-Fri)
+# 9h = France start | 14h = Canada start (Tunis timezone)
+0 9,14 * * 1-5 /usr/local/bin/ai-team-leader-conformity
 ```
 
 ## Files
