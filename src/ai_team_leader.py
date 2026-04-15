@@ -4,7 +4,7 @@ AI Team Leader - Lightweight ViciBox Supervisor
 Runs on-demand via cron, minimal resource usage.
 """
 
-import mysql.connector
+import pymysql.cursors
 import requests
 import os
 import sys
@@ -13,10 +13,10 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 DB_CONFIG = {
-    'host': os.getenv('VICIDIAL_DB_HOST', 'localhost'),
     'database': os.getenv('VICIDIAL_DB_NAME', 'asterisk'),
     'user': os.getenv('VICIDIAL_DB_USER', 'root'),
-    'password': os.getenv('VICIDIAL_DB_PASS', 'Mypass123')
+    'unix_socket': '/var/run/mysql/mysql.sock',
+    'connect_timeout': 5
 }
 
 NVIDIA_API_KEY = os.getenv('NVIDIA_API_KEY', '')
@@ -49,12 +49,12 @@ def check_resources() -> bool:
     return True
 
 def get_conn():
-    return mysql.connector.connect(**DB_CONFIG, connection_timeout=5)
+    return pymysql.connect(cursorclass=pymysql.cursors.DictCursor, **DB_CONFIG)
 
 def get_idle_agents() -> List[Dict]:
     """Get agents idle longer than threshold."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute(f"""
         SELECT user, status, campaign_id,
                TIMESTAMPDIFF(MINUTE, last_update_time, NOW()) as idle_mins
@@ -70,7 +70,7 @@ def get_idle_agents() -> List[Dict]:
 def get_hopper() -> Dict[str, int]:
     """Get hopper counts."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute(f"""
         SELECT campaign_id, COUNT(*) as cnt
         FROM vicidial_hopper
@@ -85,7 +85,7 @@ def get_hopper() -> Dict[str, int]:
 def get_unread_messages() -> List[Dict]:
     """Get unread agent messages."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute("""
         SELECT m.manager_chat_message_id, m.manager_chat_id,
                m.user, m.message
@@ -122,7 +122,7 @@ def send_chat(chat_id: int, user: str, msg: str) -> bool:
 def get_or_create_chat(user: str, camp: str) -> Optional[int]:
     """Get or create chat session."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor()
     cur.execute("""
         SELECT manager_chat_id FROM vicidial_manager_chats
         WHERE selected_agents LIKE %s AND manager = %s
