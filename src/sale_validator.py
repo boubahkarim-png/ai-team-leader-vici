@@ -97,6 +97,31 @@ SCRIPT_RULES = {
                 'optional': ['merci', 'confirmation']
             }
         }
+    },
+    '1004': {
+        'name': 'Entrepreneuses IA - Assurance',
+        'steps': {
+            'ACCROCHE': {
+                'required': ['bonjour', 'je suis'],
+                'optional': ['conseiller', 'jessica', 'groupe']
+            },
+            'SEGMENTATION': {
+                'required': ['propriétaire', 'assurance'],
+                'optional': ['locataire', 'banque', 'privé']
+            },
+            'PROPOSITION': {
+                'required': ['comparatif', 'gratuit'],
+                'optional': ['conseillère', 'rendez-vous', 'consultation']
+            },
+            'RDV': {
+                'required': ['disponible', 'lundi'],
+                'optional': ['mardi', 'mercredi', 'jeudi', 'vendredi', 'matin', 'courriel']
+            },
+            'ENGAGEMENT': {
+                'required': [],
+                'optional': ['merci', 'parfait', 'détails']
+            }
+        }
     }
 }
 
